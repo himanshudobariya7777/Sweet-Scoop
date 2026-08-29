@@ -100,13 +100,3 @@ Open `http://127.0.0.1:5000` in your web browser.
 python -m unittest discover -s tests
 ```
 
----
-
-## 🚀 GitHub Repository Setup
-
-```powershell
-git remote add origin https://github.com/himanshudobariya7777/Sweet-Scoop.git
-git branch -M main
-git push -u origin main
-```
-
