@@ -1,6 +1,8 @@
-# Sweet Scoop 🍨
+# Sweet Scoop 🍨✨
 
-Sweet Scoop is a Flask-based artisanal ice cream shop web application for browsing products, placing orders, tracking deliveries, and managing the store from an admin dashboard.
+> 🍨 Sweet Scoop is an artisanal ice cream shop web app built with Flask & Python! ✨ Explore gourmet flavours, customize scoops & waffle bowls, apply discount coupons 🎟️, place orders (COD/UPI/Card) 💳, track live deliveries in real-time 🚚, and manage inventory & orders via a full Admin Portal 👨‍💼. Sweet, seamless & handcrafted with love! ❤️🍦
+
+---
 
 ## Features Overview
 
