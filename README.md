@@ -4,6 +4,14 @@
 
 ---
 
+### 👤 Author & Repository Info
+- **Author**: **Himanshu Dobariya**
+- **GitHub Profile**: [@himanshudobariya7777](https://github.com/himanshudobariya7777)
+- **GitHub Repository**: [himanshudobariya7777/Sweet-Scoop](https://github.com/himanshudobariya7777/Sweet-Scoop)
+- **Repository URL**: `https://github.com/himanshudobariya7777/Sweet-Scoop.git`
+
+---
+
 ## Features Overview
 
 - **Customer Storefront**: Interactive menu with instant filtering by categories, search, and detailed product views.
