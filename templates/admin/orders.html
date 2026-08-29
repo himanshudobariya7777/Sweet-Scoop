@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Order Management – Sweet Scoop Admin{% endblock %}
+
+{% block content %}
+<section class="py-4 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <div>
+                <h3 class="fw-bold mb-0">📦 Customer Orders Management</h3>
+                <p class="text-muted mb-0">Manage statuses, check customer delivery addresses, and filter orders.</p>
+            </div>
+
+            <!-- Status Filter Pills -->
+            <div class="btn-group mt-3 mt-md-0" role="group">
+                <a href="{{ url_for('admin_orders', status='all') }}" class="btn btn-sm {% if current_status == 'all' %}btn-dark{% else %}btn-outline-dark{% endif %}">All</a>
+                <a href="{{ url_for('admin_orders', status='Pending') }}" class="btn btn-sm {% if current_status == 'Pending' %}btn-dark{% else %}btn-outline-dark{% endif %}">Pending</a>
+                <a href="{{ url_for('admin_orders', status='Preparing') }}" class="btn btn-sm {% if current_status == 'Preparing' %}btn-dark{% else %}btn-outline-dark{% endif %}">Preparing</a>
+                <a href="{{ url_for('admin_orders', status='Out for Delivery') }}" class="btn btn-sm {% if current_status == 'Out for Delivery' %}btn-dark{% else %}btn-outline-dark{% endif %}">Out for Delivery</a>
+                <a href="{{ url_for('admin_orders', status='Delivered') }}" class="btn btn-sm {% if current_status == 'Delivered' %}btn-dark{% else %}btn-outline-dark{% endif %}">Delivered</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-2">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th class="py-3">Order ID</th>
+                            <th class="py-3">Customer & Phone</th>
+                            <th class="py-3">Address</th>
+                            <th class="py-3">Items Summary</th>
+                            <th class="py-3">Total</th>
+                            <th class="py-3">Current Status</th>
+                            <th class="py-3 text-end">Update Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not orders %}
+                        <tr><td colspan="7" class="text-center py-5 text-muted">No orders found matching this filter.</td></tr>
+                        {% else %}
+                            {% for ord in orders %}
+                            <tr>
+                                <td class="fw-bold text-danger">#{{ ord.order_code }}<br><small class="text-muted fw-normal">{{ ord.created_at.strftime('%m/%d %H:%M') }}</small></td>
+                                <td>
+                                    <div class="fw-bold">{{ ord.customer_name }}</div>
+                                    <small class="text-muted">{{ ord.mobile_number }}</small>
+                                </td>
+                                <td style="max-width: 200px;" class="small text-truncate" title="{{ ord.address }}">{{ ord.address }}</td>
+                                <td>
+                                    <ul class="list-unstyled mb-0 small">
+                                        {% for item in ord.items %}
+                                        <li>• {{ item.product_name }} ({{ item.size }} x{{ item.quantity }})</li>
+                                        {% endfor %}
+                                    </ul>
+                                </td>
+                                <td class="fw-bold text-dark">₹{{ "%.2f"|format(ord.total_price) }}<br><span class="badge bg-light text-dark border" style="font-size: 0.65rem;">{{ ord.payment_option }}</span></td>
+                                <td>
+                                    <span id="status-badge-{{ ord.id }}" class="badge {% if ord.status=='Delivered' %}bg-success{% elif ord.status=='Out for Delivery' %}bg-info text-dark{% elif ord.status=='Preparing' %}bg-warning text-dark{% elif ord.status=='Cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                        {{ ord.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <select onchange="updateOrderStatus('{{ ord.id }}', this.value)" class="form-select form-select-sm ms-auto" style="width: 150px;">
+                                        <option value="Pending" {% if ord.status=='Pending' %}selected{% endif %}>Pending</option>
+                                        <option value="Preparing" {% if ord.status=='Preparing' %}selected{% endif %}>Preparing</option>
+                                        <option value="Out for Delivery" {% if ord.status=='Out for Delivery' %}selected{% endif %}>Out for Delivery</option>
+                                        <option value="Delivered" {% if ord.status=='Delivered' %}selected{% endif %}>Delivered</option>
+                                        <option value="Cancelled" {% if ord.status=='Cancelled' %}selected{% endif %}>Cancelled</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

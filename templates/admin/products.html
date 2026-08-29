@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory & Flavours – Sweet Scoop Admin{% endblock %}
+
+{% block content %}
+<section class="py-4 bg-light border-bottom mb-4">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="fw-bold mb-0">🍦 Ice Cream Inventory Management</h3>
+                <p class="text-muted mb-0">Add new flavours, update pricing, and remove items.</p>
+            </div>
+            <button class="btn btn-primary-custom" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                <i class="bi bi-plus-lg me-1"></i> Add New Flavour
+            </button>
+        </div>
+    </div>
+</section>
+
+<section class="py-2">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Image</th>
+                            <th>Flavour Name</th>
+                            <th>Category</th>
+                            <th>Pricing (Small/Med/Lg)</th>
+                            <th>Badges</th>
+                            <th class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                        <tr>
+                            <td>
+                                <img src="{{ cache_bust_url(product.image_url, product.id) }}" alt="{{ product.name }}" class="rounded-3" style="width: 50px; height: 50px; object-fit: cover;" onerror="this.onerror=null; this.src='/static/images/hero.jpg';">
+                            </td>
+                            <td>
+                                <div class="fw-bold">{{ product.name }}</div>
+                                <small class="text-muted d-block text-truncate" style="max-width: 250px;">{{ product.description }}</small>
+                            </td>
+                            <td><span class="badge bg-secondary">{{ product.category_slug }}</span></td>
+                            <td>
+                                <small class="fw-bold">₹{{ "%.2f"|format(product.price_small) }} / ₹{{ "%.2f"|format(product.price_medium) }} / ₹{{ "%.2f"|format(product.price_large) }}</small>
+                            </td>
+                            <td>
+                                {% if product.is_popular %}<span class="badge bg-danger">Popular</span>{% endif %}
+                                {% if product.is_special_offer %}<span class="badge bg-warning text-dark">{{ product.discount_percent }}% Offer</span>{% endif %}
+                            </td>
+                            <td class="text-end">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary me-2"
+                                        title="Edit Flavour"
+                                        data-edit-product
+                                        data-id="{{ product.id }}"
+                                        data-name="{{ product.name }}"
+                                        data-description="{{ product.description }}"
+                                        data-category="{{ product.category_slug }}"
+                                        data-small="{{ product.price_small }}"
+                                        data-medium="{{ product.price_medium }}"
+                                        data-large="{{ product.price_large }}"
+                                        data-image="{{ product.image_url }}"
+                                        data-ingredients="{{ product.ingredients }}"
+                                        data-popular="{{ 'true' if product.is_popular else 'false' }}"
+                                        data-special="{{ 'true' if product.is_special_offer else 'false' }}"
+                                        data-discount="{{ product.discount_percent }}">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </button>
+                                <form method="POST" action="{{ url_for('admin_delete_product', product_id=product.id) }}" onsubmit="return confirm('Are you sure you want to delete {{ product.name }}?');" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Flavour"><i class="bi bi-trash"></i> Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Add / Update Product Modal -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content rounded-4">
+            <form id="productForm" method="POST" action="{{ url_for('admin_products') }}" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 id="productModalTitle" class="modal-title fw-bold">Add New Ice Cream Flavour</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Flavour Name</label>
+                            <input type="text" id="product_name" name="name" class="form-control" placeholder="e.g. Pistachio Almond Delight" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Category</label>
+                            <select id="product_category" name="category_slug" class="form-select" required>
+                                {% for cat in categories %}
+                                    {% if cat.slug != 'all' %}
+                                    <option value="{{ cat.slug }}">{{ cat.name }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold">Description</label>
+                            <textarea id="product_description" name="description" class="form-control" rows="2" placeholder="Delicious description of taste notes..." required></textarea>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Small (1 Scoop) Price (₹)</label>
+                            <input type="number" id="product_small" step="0.01" name="price_small" class="form-control" value="319.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Medium (2 Scoops) Price (₹)</label>
+                            <input type="number" id="product_medium" step="0.01" name="price_medium" class="form-control" value="479.00" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Large (Waffle Bowl) Price (₹)</label>
+                            <input type="number" id="product_large" step="0.01" name="price_large" class="form-control" value="639.00" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Image URL</label>
+                            <input type="text" id="product_image" name="image_url" class="form-control" value="/static/images/chocolate.jpg">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Upload Image</label>
+                            <input type="file" id="product_upload" name="image" class="form-control" accept="image/*">
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label fw-semibold">Ingredients</label>
+                            <input type="text" id="product_ingredients" name="ingredients" class="form-control" value="Cream, Whole Milk, Cane Sugar, Natural Extracts">
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" id="product_popular" name="is_popular" class="form-check-input">
+                                <label class="form-check-label fw-semibold" for="product_popular">Mark as Popular</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-check mt-4">
+                                <input type="checkbox" id="product_special" name="is_special_offer" class="form-check-input">
+                                <label class="form-check-label fw-semibold" for="product_special">Special Offer</label>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label fw-semibold">Discount Percent (%)</label>
+                            <input type="number" id="product_discount" name="discount_percent" class="form-control" value="10">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button id="productSubmitBtn" type="submit" class="btn btn-primary-custom">Save Flavour</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Customer Inquiries – Sweet Scoop Admin{% endblock %}
+
+{% block content %}
+<section class="py-4 bg-light border-bottom mb-4">
+    <div class="container">
+        <h3 class="fw-bold mb-0">📬 Customer Contact Inquiries</h3>
+        <p class="text-muted mb-0">Messages submitted via the Contact Us form.</p>
+    </div>
+</section>
+
+<section class="py-2">
+    <div class="container">
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead class="bg-dark text-white">
+                        <tr>
+                            <th>Sender</th>
+                            <th>Subject</th>
+                            <th>Message</th>
+                            <th>Received At</th>
+                            <th>Status</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if not messages %}
+                        <tr><td colspan="6" class="text-center py-5 text-muted">No contact messages received yet.</td></tr>
+                        {% else %}
+                            {% for msg in messages %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ msg.name }}</div>
+                                    <small class="text-muted">{{ msg.email }}</small>
+                                </td>
+                                <td class="fw-semibold">{{ msg.subject }}</td>
+                                <td style="max-width: 300px;">{{ msg.message }}</td>
+                                <td class="small text-muted">{{ msg.created_at.strftime('%b %d, %Y %H:%M') }}</td>
+                                <td>
+                                    <span id="msg-status-{{ msg.id }}" class="badge {% if msg.status == 'Read' %}bg-secondary{% else %}bg-primary{% endif %}">
+                                        {{ msg.status }}
+                                    </span>
+                                </td>
+                                <td class="text-end">
+                                    <button id="msg-btn-{{ msg.id }}" data-msg-id="{{ msg.id }}" class="btn btn-sm btn-toggle-msg-status {% if msg.status == 'Read' %}btn-outline-secondary{% else %}btn-outline-primary{% endif %}">
+                                        {% if msg.status == 'Read' %}Mark Unread{% else %}Mark Read{% endif %}
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+{% endblock %}

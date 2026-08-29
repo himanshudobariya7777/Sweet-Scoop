@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us – Sweet Scoop Store & Support{% endblock %}
+
+{% block content %}
+<section class="py-5 bg-light border-bottom">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-2">Get In Touch With Sweet Scoop 📬</h2>
+        <p class="text-muted">Have a question about catering, feedback, or custom party orders? Send us a message!</p>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="card border-0 shadow-sm rounded-4 p-4">
+                    <h4 class="fw-bold mb-4">Send Us A Message</h4>
+
+                    <form method="POST" action="{{ url_for('contact') }}">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="name" class="form-label fw-semibold">Your Full Name <span
+                                        class="text-danger">*</span></label>
+                                <input type="text" name="name" id="name" class="form-control"
+                                    placeholder="e.g. Alex Rivera" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-semibold">Your Email Address <span
+                                        class="text-danger">*</span></label>
+                                <input type="email" name="email" id="email" class="form-control"
+                                    placeholder="alex@example.com" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="subject" class="form-label fw-semibold">Subject</label>
+                                <input type="text" name="subject" id="subject" class="form-control"
+                                    placeholder="e.g. Catering inquiry for Birthday Party">
+                            </div>
+                            <div class="col-12">
+                                <label for="message" class="form-label fw-semibold">Your Message <span
+                                        class="text-danger">*</span></label>
+                                <textarea name="message" id="message" class="form-control" rows="5"
+                                    placeholder="Write your message here..." required></textarea>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3">
+                                    Send Message <i class="bi bi-send-fill ms-1"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Store Location & Details -->
+            <div class="col-lg-5">
+                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-shop text-danger me-2"></i> Store Location & Hours</h5>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-1">Sweet Scoop Rajkot Store</h6>
+                        <p class="text-muted mb-0"><i class="bi bi-geo-alt-fill text-danger me-1"></i> 12 Ice Cream
+                            Shop, Rajkot City, Gujarat 360001</p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-1">Phone & Whatsapp</h6>
+                        <p class="text-muted mb-0"><i class="bi bi-telephone-fill text-danger me-1"></i> +91 98765 43210
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <h6 class="fw-bold mb-1">Email Support</h6>
+                        <p class="text-muted mb-0"><i class="bi bi-envelope-fill text-danger me-1"></i>
+                            himanshudobariya@gmail.com</p>
+                    </div>
+
+                    <div>
+                        <h6 class="fw-bold mb-1">Opening Hours</h6>
+                        <p class="text-muted mb-0"><i class="bi bi-clock-fill text-danger me-1"></i> Monday - Sunday:
+                            10:00 AM - 11:00 PM</p>
+                    </div>
+                </div>
+
+                <!-- Real Store Location Map -->
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden"
+                    style="height: 260px; position: relative;">
+                    <iframe
+                        src="https://www.google.com/maps?q=12%20Ice%20Cream%20Lane%2C%20Near%20Crystal%20Mall%2C%20Kalawad%20Road%2C%20Rajkot%2C%20Gujarat%20360001%2C%20India&output=embed"
+                        width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade" title="Sweet Scoop Rajkot Store Location">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

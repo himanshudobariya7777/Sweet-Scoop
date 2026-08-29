@@ -1,0 +1,27 @@
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual Environment
+.venv/
+env/
+venv/
+ENV/
+
+# Database files
+instance/
+*.db
+*.sqlite3
+
+# IDE and Editor config
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store

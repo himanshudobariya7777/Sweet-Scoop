@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} – Sweet Scoop{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item"><a href="{{ url_for('menu') }}" class="text-decoration-none">Menu</a></li>
+                <li class="breadcrumb-item active" aria-current="page">{{ product.name }}</li>
+            </ol>
+        </nav>
+
+        <div class="row g-5">
+            <!-- Product Image -->
+            <div class="col-lg-6">
+                <div class="position-relative">
+                    {% if product.discount_percent > 0 %}
+                        <span class="discount-badge fs-6 px-3 py-2">{{ product.discount_percent }}% OFF</span>
+                    {% endif %}
+                    <img src="{{ cache_bust_url(product.image_url, product.id) }}" alt="{{ product.name }}" class="product-detail-img" onerror="this.onerror=null; this.src='/static/images/hero.jpg';">
+                </div>
+            </div>
+
+            <!-- Product Details & Controls -->
+            <div class="col-lg-6">
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-1 mb-2">
+                    {{ product.category_slug.upper() }} FLAVOUR
+                </span>
+                
+                <h1 class="display-6 fw-bold text-dark">{{ product.name }}</h1>
+                
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <div class="rating-stars fs-5 mb-0">
+                        <i class="bi bi-star-fill text-warning"></i>
+                    </div>
+                    <span class="fw-bold fs-5">{{ product.rating }}</span>
+                    <span class="text-muted">({{ product.review_count }} verified reviews)</span>
+                </div>
+
+                <div class="mb-4">
+                    <span class="display-6 fw-bold text-danger" id="detail-product-price">₹{{ "%.2f"|format(product.price_small) }}</span>
+                </div>
+
+                <p class="lead text-secondary mb-4">{{ product.description }}</p>
+
+                <!-- Size Selection Buttons -->
+                <div class="mb-4">
+                    <label class="fw-bold mb-2 text-dark">Select Scoop Size:</label>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="size-selector-btn active" data-size="Regular" data-price="{{ product.price_small }}">
+                            <div class="fw-bold">Regular</div>
+                            <small class="text-muted">1 Scoop (₹{{ "%.2f"|format(product.price_small) }})</small>
+                        </button>
+                        <button type="button" class="size-selector-btn" data-size="Medium" data-price="{{ product.price_medium }}">
+                            <div class="fw-bold">Medium</div>
+                            <small class="text-muted">2 Scoops (₹{{ "%.2f"|format(product.price_medium) }})</small>
+                        </button>
+                        <button type="button" class="size-selector-btn" data-size="Large" data-price="{{ product.price_large }}">
+                            <div class="fw-bold">Large</div>
+                            <small class="text-muted">Waffle Bowl (₹{{ "%.2f"|format(product.price_large) }})</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quantity & Add to Cart -->
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="qty-control-group p-1" style="height: 50px;">
+                        <button class="qty-btn" onclick="const decEl=document.getElementById('detail-qty-input'); if(decEl.value>1) decEl.value--;">-</button>
+                        <input type="number" id="detail-qty-input" value="1" min="1" max="20" class="qty-val border-0 bg-transparent" readonly>
+                        <button class="qty-btn" onclick="const incEl=document.getElementById('detail-qty-input'); incEl.value++;">+</button>
+                    </div>
+
+                    <button id="detail-add-cart-btn" 
+                            data-id="{{ product.id }}" 
+                            data-name="{{ product.name }}" 
+                            data-price="{{ product.price_small }}" 
+                            data-image="{{ cache_bust_url(product.image_url, product.id) }}" 
+                            class="btn btn-primary-custom btn-lg flex-grow-1">
+                        <i class="bi bi-bag-plus-fill me-2"></i> Add To Cart
+                    </button>
+                </div>
+
+                <!-- Ingredients Info Box -->
+                <div class="p-3 bg-light rounded-3 border mb-4">
+                    <h6 class="fw-bold text-dark mb-1"><i class="bi bi-info-circle text-danger me-2"></i> Artisanal Ingredients:</h6>
+                    <small class="text-muted">{{ product.ingredients }}</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews & Ratings Section -->
+        <div class="row mt-5 pt-4 border-top">
+            <div class="col-lg-8">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="fw-bold">Customer Reviews ({{ reviews|length }})</h3>
+                    <button class="btn btn-outline-custom btn-sm" data-bs-toggle="modal" data-bs-target="#reviewModal">
+                        Write a Review ⭐
+                    </button>
+                </div>
+
+                {% if not reviews %}
+                    <p class="text-muted">No reviews yet for this flavor. Be the first to share your scoop experience!</p>
+                {% else %}
+                    <div class="d-flex flex-column gap-3">
+                        {% for rev in reviews %}
+                        <div class="p-3 bg-white rounded-3 border shadow-sm">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="fw-bold text-dark">{{ rev.user_name }}</div>
+                                <div class="text-warning">
+                                    {% for i in range(rev.rating) %}<i class="bi bi-star-fill"></i>{% endfor %}
+                                </div>
+                            </div>
+                            <p class="mb-1 text-secondary">{{ rev.comment }}</p>
+                            <small class="text-muted">{{ rev.created_at.strftime('%b %d, %Y') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Review Modal -->
+<div class="modal fade" id="reviewModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content rounded-4">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Review {{ product.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Your Name</label>
+                    <input type="text" id="review-author-name" class="form-control" value="{{ current_user.username if current_user else '' }}" placeholder="Enter your name">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Rating (1 to 5 Stars)</label>
+                    <select id="review-rating-val" class="form-select">
+                        <option value="5" selected>5 Stars - Heavenly Delicious! ⭐⭐⭐⭐⭐</option>
+                        <option value="4">4 Stars - Very Tasty ⭐⭐⭐⭐</option>
+                        <option value="3">3 Stars - Good ⭐⭐⭐</option>
+                        <option value="2">2 Stars - Average ⭐⭐</option>
+                        <option value="1">1 Star - Poor ⭐</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Your Review Comment</label>
+                    <textarea id="review-comment-text" class="form-control" rows="3" placeholder="Tell us what you liked about this flavor..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" onclick="submitReview('{{ product.id }}')" class="btn btn-primary-custom">Submit Review</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

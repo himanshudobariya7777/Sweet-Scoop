@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Flavours Menu – Sweet Scoop Ice Cream Shop{% endblock %}
+
+{% block content %}
+<section class="py-4 bg-light border-bottom">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h2 class="fw-bold mb-1">Explore Our Flavours 🍦</h2>
+                <p class="text-muted mb-0">Browse chocolate, vanilla, strawberry, mango, sorbets & sundaes.</p>
+            </div>
+            <div class="col-md-6 mt-3 mt-md-0">
+                <div class="search-box-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="menu-search-input" class="form-control search-input" placeholder="Search flavours, cocoa, berries or ingredients..." value="{{ search_query }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- Category Filter Chips Bar -->
+        <div class="category-filter-bar mt-4">
+            {% for cat in categories %}
+            <a href="{{ url_for('menu', category=cat.slug) }}" 
+               class="category-chip {% if selected_category == cat.slug %}active{% endif %}"
+               data-slug="{{ cat.slug }}">
+                <span>{{ cat.icon }}</span> {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4" id="products-grid">
+            {% if not products %}
+                <div class="col-12 text-center py-5">
+                    <div style="font-size: 4rem;">🍧</div>
+                    <h4 class="mt-3">No ice cream flavors found!</h4>
+                    <p class="text-muted">Try clearing your search query or selecting a different category tab.</p>
+                    <a href="{{ url_for('menu') }}" class="btn btn-primary-custom" onclick="resetMenuFilters(event)">Reset Filters</a>
+                </div>
+            {% else %}
+                {% for product in products %}
+                <div class="col-lg-3 col-md-6 product-card-col" 
+                     data-name="{{ product.name }}" 
+                     data-desc="{{ product.description }}" 
+                     data-category="{{ product.category_slug }}">
+                    
+                    <div class="ice-cream-card">
+                        {% if product.discount_percent > 0 %}
+                            <span class="discount-badge">{{ product.discount_percent }}% OFF</span>
+                        {% endif %}
+                        <button class="fav-badge-btn" data-id="{{ product.id }}" onclick="toggleWishlist('{{ product.id }}', this)">
+                            <i class="bi bi-heart"></i>
+                        </button>
+                        
+                        <div class="card-img-wrapper">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                                <img src="{{ cache_bust_url(product.image_url, product.id) }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null; this.src='/static/images/hero.jpg';">
+                            </a>
+                        </div>
+                        
+                        <div class="card-body-custom">
+                            <span class="card-category-tag">{{ product.category_slug.replace('-', ' ') }}</span>
+                            <h5 class="card-title-custom">
+                                <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
+                            </h5>
+                            
+                            <div class="rating-stars">
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <i class="bi bi-star-fill"></i>
+                                <span class="rating-score">{{ product.rating }} ({{ product.review_count }})</span>
+                            </div>
+
+                            <div class="card-price-row">
+                                <div>
+                                    <span class="card-price">₹{{ "%.2f"|format(product.price_small) }}</span>
+                                    <small class="text-muted d-block" style="font-size: 0.75rem;">1 Scoop</small>
+                                </div>
+                                <button onclick="addToCart('{{ product.id }}', '{{ product.name }}', '{{ product.price_small }}', '{{ cache_bust_url(product.image_url, product.id) }}', 'Regular')" class="add-cart-btn" title="Add Regular Scoop">
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <div class="col-12 text-center py-5" id="no-products-msg" style="display: none;">
+                    <div style="font-size: 4rem;">🍧</div>
+                    <h4 class="mt-3">No ice cream flavors found!</h4>
+                    <p class="text-muted">Try clearing your search query or selecting a different category tab.</p>
+                    <button class="btn btn-primary-custom" onclick="resetMenuFilters(event)">Reset Filters</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

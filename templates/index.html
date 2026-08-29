@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Sweet Scoop – Premium Artisanal Ice Cream Shop{% endblock %}
+
+{% block content %}
+<!-- ================= HERO SECTION ================= -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="hero-badge">
+                    <span>✨ 100% Organic & Handcrafted Daily</span>
+                </div>
+                <h1 class="hero-title">
+                    Scoop Into <span>Pure Happiness</span> Every Day!
+                </h1>
+                <p class="hero-lead">
+                    Indulge in velvety smooth, artisanal ice creams made with real fruits, rich Belgian chocolate, and pure organic cream. Order online for swift delivery to your doorstep!
+                </p>
+                
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <a href="{{ url_for('menu') }}" class="btn btn-primary-custom btn-lg">
+                        Order Now 🍦
+                    </a>
+                    <a href="{{ url_for('about') }}" class="btn btn-outline-custom btn-lg">
+                        Our Story
+                    </a>
+                </div>
+
+                <!-- Coupon Promo Alert Banner -->
+                <div class="mt-4 p-3 bg-white rounded-4 border shadow-sm d-flex align-items-center gap-3" style="max-width: 480px;">
+                    <div class="fs-2 text-warning">🏷️</div>
+                    <div>
+                        <span class="badge bg-danger mb-1">PROMO OFFERS</span>
+                        <div class="fw-bold text-dark" style="font-size: 0.95rem;">Use <code class="bg-light px-2 py-1 rounded text-danger">SCOOP10</code> for 10% OFF or <code class="bg-light px-2 py-1 rounded text-danger">FIRST20</code> for 20% OFF!</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center">
+                <div class="hero-img-container">
+                    <img src="{{ url_for('static', filename='images/hero.jpg') }}" alt="Sweet Scoop Gourmet Ice Cream" class="hero-img img-fluid">
+                    <div class="hero-floating-card">
+                        <div class="fs-1">⭐</div>
+                        <div class="text-start">
+                            <div class="fw-bold text-dark">4.9 / 5.0 Rating</div>
+                            <small class="text-muted">Over 1,200+ Happy Customers</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= POPULAR FLAVOURS SECTION ================= -->
+<section class="py-5">
+    <div class="container">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end mb-4">
+            <div>
+                <span class="text-danger fw-bold text-uppercase tracking-wider">Most Loved Treats</span>
+                <h2 class="display-6 fw-bold mb-0">Popular Flavours 🍫🍨</h2>
+            </div>
+            <a href="{{ url_for('menu') }}" class="btn btn-link text-danger fw-bold text-decoration-none mt-2 mt-md-0">
+                View All Menu <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <div class="row g-4">
+            {% for product in popular_products %}
+            <div class="col-lg-3 col-md-6">
+                <div class="ice-cream-card">
+                    {% if product.discount_percent > 0 %}
+                        <span class="discount-badge">{{ product.discount_percent }}% OFF</span>
+                    {% endif %}
+                    <button class="fav-badge-btn" data-id="{{ product.id }}" onclick="toggleWishlist('{{ product.id }}', this)">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                    
+                    <div class="card-img-wrapper">
+                        <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                            <img src="{{ cache_bust_url(product.image_url, product.id) }}" alt="{{ product.name }}" loading="lazy" onerror="this.onerror=null; this.src='/static/images/hero.jpg';">
+                        </a>
+                    </div>
+                    
+                    <div class="card-body-custom">
+                        <span class="card-category-tag">{{ product.category_slug.replace('-', ' ') }}</span>
+                        <h5 class="card-title-custom">
+                            <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
+                        </h5>
+                        
+                        <div class="rating-stars">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <span class="rating-score">{{ product.rating }} ({{ product.review_count }})</span>
+                        </div>
+
+                        <div class="card-price-row">
+                            <div>
+                                <span class="card-price">₹{{ "%.2f"|format(product.price_small) }}</span>
+                                <small class="text-muted block d-block" style="font-size: 0.75rem;">1 Scoop</small>
+                            </div>
+                            <button onclick="addToCart('{{ product.id }}', '{{ product.name }}', '{{ product.price_small }}', '{{ cache_bust_url(product.image_url, product.id) }}', 'Regular')" class="add-cart-btn" title="Add Regular Scoop">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ================= SPECIAL OFFERS BANNER ================= -->
+<section class="py-5 bg-white border-top border-bottom">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-5">
+                <span class="badge bg-danger px-3 py-2 fs-6 mb-2">🔥 LIMITED TIME DEAL</span>
+                <h2 class="display-6 fw-bold">Special Summer Offers!</h2>
+                <p class="text-muted">Get up to 20% off on our fresh fruity sorbets and gourmet chocolate fudge cups. Order for family gatherings or cozy movie nights!</p>
+                <div class="d-flex gap-3 mt-4">
+                    <div class="p-3 bg-light rounded-3 text-center" style="min-width: 80px;">
+                        <span class="fs-3 fw-bold text-danger">20%</span>
+                        <div class="small text-muted">FIRST20</div>
+                    </div>
+                    <div class="p-3 bg-light rounded-3 text-center" style="min-width: 80px;">
+                        <span class="fs-3 fw-bold text-danger">10%</span>
+                        <div class="small text-muted">SCOOP10</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="row g-3">
+                    {% for product in special_offers[:2] %}
+                    <div class="col-md-6">
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                            <img src="{{ product.image_url }}" class="card-img-top" style="height: 180px; object-fit: cover;" alt="{{ product.name }}">
+                            <div class="card-body">
+                                <span class="badge bg-warning text-dark mb-1">{{ product.discount_percent }}% Discount</span>
+                                <h5 class="card-title fw-bold">{{ product.name }}</h5>
+                                <p class="card-text text-muted small text-truncate">{{ product.description }}</p>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="fs-5 fw-bold text-dark">₹{{ "%.2f"|format(product.price_small) }}</span>
+                                    <a href="{{ url_for('product_detail', product_id=product.id) }}" class="btn btn-sm btn-primary-custom">Claim Deal</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ================= CUSTOMER REVIEWS ================= -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="text-danger fw-bold text-uppercase tracking-wider">Testimonials</span>
+            <h2 class="display-6 fw-bold">What Ice Cream Lovers Say ⭐</h2>
+        </div>
+
+        <div class="row g-4">
+            {% for review in reviews %}
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm rounded-4 p-4 position-relative">
+                    <div class="rating-stars mb-3 fs-5">
+                        {% for i in range(review.rating) %}
+                            <i class="bi bi-star-fill text-warning"></i>
+                        {% endfor %}
+                    </div>
+                    <p class="card-text text-secondary fst-italic">"{{ review.comment }}"</p>
+                    <div class="mt-auto pt-3 border-top d-flex align-items-center">
+                        <div class="bg-danger text-white rounded-circle fw-bold me-3 d-flex align-items-center justify-content-center" style="width: 42px; height: 42px;">
+                            {{ review.user_name[0] }}
+                        </div>
+                        <div>
+                            <h6 class="mb-0 fw-bold">{{ review.user_name }}</h6>
+                            <small class="text-muted">Verified Customer</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

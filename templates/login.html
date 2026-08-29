@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In – Sweet Scoop{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card border-0 shadow-lg rounded-4 p-4">
+                    <div class="text-center mb-4">
+                        <div style="font-size: 3rem;">🍦</div>
+                        <h3 class="fw-bold">Welcome Back!</h3>
+                        <p class="text-muted">Sign in to your Sweet Scoop account</p>
+                    </div>
+
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-semibold">Email Address</label>
+                            <input type="email" name="email" id="email" class="form-control form-control-lg" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-semibold">Password</label>
+                            <input type="password" name="password" id="password" class="form-control form-control-lg" placeholder="••••••••" required>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary-custom btn-lg w-100 py-3 mb-3">
+                            Sign In 🍦
+                        </button>
+                    </form>
+
+                    <div class="p-3 bg-light rounded-3 text-center border">
+                        <small class="text-muted">Demo Credentials:</small>
+                        <div class="small text-dark mt-1">
+                            <b>Admin:</b> <code>admin@sweetscoop.com</code> / <code>admin123</code><br>
+                            <b>Customer:</b> <code>customer@example.com</code> / <code>customer123</code>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-3 text-muted small">
+                        Don't have an account yet? <a href="{{ url_for('register') }}" class="text-danger fw-bold">Register Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

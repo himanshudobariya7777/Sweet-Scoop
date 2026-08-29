@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Sweet Scoop – Online Ice Cream Ordering & Management System{% endblock %}</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Sweet Scoop is your ultimate destination for artisanal ice creams, handcrafted sundaes, sorbets and gourmet frozen treats. Order online with instant delivery!">
+    <meta name="keywords"
+        content="ice cream, sweet scoop, gourmet ice cream, order ice cream online, sundaes, sorbet, chocolate ice cream">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Custom Theme Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+    {% if request.endpoint not in ['login', 'register'] %}
+    <!-- ================= NAVIGATION BAR ================= -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <span class="brand-icon">🍦</span> Sweet <span>Scoop</span>
+            </a>
+
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}"
+                            href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'menu' %}active{% endif %}"
+                            href="{{ url_for('menu') }}">Flavours Menu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
+                            href="{{ url_for('about') }}">About Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}"
+                            href="{{ url_for('contact') }}">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'track' %}active{% endif %}"
+                            href="{{ url_for('track') }}"><i class="bi bi-geo-alt"></i> Track Order</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    {% if current_user %}
+                    <div class="dropdown">
+                        <button class="btn btn-outline-custom dropdown-toggle py-1 px-3" type="button"
+                            data-bs-toggle="dropdown">
+                            <i class="bi bi-person-circle"></i> {{ current_user.username }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                            {% if current_user.role == 'admin' %}
+                            <li><a class="dropdown-item fw-bold text-primary" href="{{ url_for('admin_dashboard') }}"><i
+                                        class="bi bi-speedometer2"></i> Admin Dashboard</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_products') }}"><i
+                                        class="bi bi-plus-circle"></i> Manage Flavours</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_orders') }}"><i
+                                        class="bi bi-box-seam"></i> Manage Orders</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_messages') }}"><i
+                                        class="bi bi-envelope"></i> Messages</a></li>
+                            <li><a class="dropdown-item" href="{{ url_for('admin_change_password') }}"><i
+                                        class="bi bi-shield-lock"></i> Change Password</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{{ url_for('profile') }}"><i class="bi bi-receipt"></i>
+                                    Order History</a></li>
+                            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i
+                                        class="bi bi-box-arrow-right"></i> Logout</a></li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login') }}"
+                        class="btn btn-link text-dark fw-semibold text-decoration-none">Sign In</a>
+                    <a href="{{ url_for('register') }}"
+                        class="btn btn-sm btn-primary-custom d-none d-sm-inline-block">Register</a>
+                    {% endif %}
+
+                    <!-- Offcanvas Cart Trigger -->
+                    <button class="cart-icon-btn" type="button" data-bs-toggle="offcanvas"
+                        data-bs-target="#offcanvasCart">
+                        <i class="bi bi-bag-heart-fill fs-5"></i>
+                        <span class="cart-badge">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+
+    <!-- Flash Messages Container -->
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show rounded-3 shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ================= OFFCANVAS LIVE CART DRAWER ================= -->
+    <div class="offcanvas offcanvas-end rounded-start-4" tabindex="-1" id="offcanvasCart"
+        aria-labelledby="offcanvasCartLabel">
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold" id="offcanvasCartLabel">
+                <i class="bi bi-basket2-fill text-danger me-2"></i> Your Scoop Cart
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body" id="offcanvas-cart-items">
+            <!-- Cart items populated dynamically via cart.js -->
+        </div>
+        <div class="offcanvas-footer p-3 border-top bg-light">
+            <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal:</span>
+                <span class="fw-bold" id="offcanvas-subtotal">₹0.00</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3">
+                <span class="fw-bold">Total Estimated:</span>
+                <span class="fw-bold fs-5 text-danger" id="offcanvas-total">₹0.00</span>
+            </div>
+            <div class="d-grid gap-2">
+                <a href="{{ url_for('cart') }}" class="btn btn-outline-dark fw-semibold">View Full Cart</a>
+                <a href="{{ url_for('checkout') }}" class="btn btn-primary-custom">Proceed to Checkout</a>
+            </div>
+        </div>
+    </div>
+
+    {% if request.endpoint not in ['login', 'register'] %}
+    <!-- ================= FOOTER ================= -->
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-4 col-md-6">
+                    <a href="{{ url_for('index') }}" class="footer-brand text-decoration-none">
+                        🍦 Sweet Scoop
+                    </a>
+                    <p class="mt-3 text-muted">Crafting handcrafted, 100% natural gourmet ice creams with pure love,
+                        organic cream, and fresh fruit infusions. Every scoop is a moment of pure bliss!</p>
+                    <div class="d-flex gap-3 fs-5 mt-3">
+                        <a href="https://github.com/himanshudobariya" target="_blank" rel="noopener noreferrer" class="footer-link" title="GitHub"><i class="bi bi-github"></i></a>
+                        <a href="#" class="footer-link" title="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="footer-link" title="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="footer-link" title="X (Twitter)"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="footer-link" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-6">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="{{ url_for('index') }}" class="footer-link">Home</a></li>
+                        <li><a href="{{ url_for('menu') }}" class="footer-link">Flavours Menu</a></li>
+                        <li><a href="{{ url_for('about') }}" class="footer-link">Our Story</a></li>
+                        <li><a href="{{ url_for('contact') }}" class="footer-link">Contact Us</a></li>
+                        <li><a href="{{ url_for('track') }}" class="footer-link">Order Tracking</a></li>
+                        <li><a href="{{ url_for('admin_dashboard') }}" class="footer-link">Admin</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-white mb-3">Popular Flavours</h5>
+                    <ul class="list-unstyled d-flex flex-column gap-2">
+                        <li><a href="{{ url_for('menu', category='chocolate') }}" class="footer-link">🍫 Dark Chocolate
+                                Fudge</a></li>
+                        <li><a href="{{ url_for('menu', category='vanilla') }}" class="footer-link">🍨 Bourbon Vanilla
+                                Bean</a></li>
+                        <li><a href="{{ url_for('menu', category='strawberry') }}" class="footer-link">🍓 Fresh
+                                Strawberry Bliss</a></li>
+                        <li><a href="{{ url_for('menu', category='butterscotch') }}" class="footer-link">🍯 Butterscotch
+                                Crunch</a></li>
+                        <li><a href="{{ url_for('menu', category='mango') }}" class="footer-link">🥭 Alphonso Mango
+                                Sorbet</a></li>
+                    </ul>
+                </div>
+
+                <div class="col-lg-3 col-md-6">
+                    <h5 class="text-white mb-3">Store Info</h5>
+                    <p class="mb-2">
+                        <i class="bi bi-geo-alt-fill text-danger me-2"></i>
+                        <a href="https://maps.google.com/?q=12%20Ice%20Cream%20Shop%2C%20Rajkot%20City%2C%20Gujarat%20360001%2C%20India"
+                            target="_blank" rel="noopener noreferrer" class="footer-link">
+                            12 Ice Cream Shop, Rajkot City, Gujarat 360001, India
+                        </a>
+                    </p>
+                    <p class="mb-2"><i class="bi bi-telephone-fill text-danger me-2"></i> +91 98765 43210</p>
+                    <p class="mb-2"><i class="bi bi-envelope-fill text-danger me-2"></i> himanshudobariya@gmail.com</p>
+                    <p class="mb-0"><i class="bi bi-clock-fill text-danger me-2"></i> Mon - Sun: 10:00 AM - 11:00 PM</p>
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center text-muted small">
+                <p class="mb-0">&copy; 2026 Sweet Scoop Ice Cream Shop. All rights reserved.</p>
+                <p class="mb-0">Designed with:<b> Himanshu Dobariya</b>❤️ for Ice Cream Lovers everywhere.</p>
+            </div>
+        </div>
+    </footer>
+    {% endif %}
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Scripts -->
+    <script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+
+</html>

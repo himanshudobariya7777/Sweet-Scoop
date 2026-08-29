@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout – Sweet Scoop Ice Cream{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="display-6 fw-bold mb-4"><i class="bi bi-credit-card-2-front text-danger me-2"></i> Complete Your Order</h2>
+
+        <form id="checkout-form">
+            <div class="row g-4">
+                <!-- Delivery & Customer Information Form -->
+                <div class="col-lg-7">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-person-bounding-box text-danger me-2"></i> Customer & Shipping Details</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="customer_name" class="form-label fw-semibold">Full Customer Name <span class="text-danger">*</span></label>
+                                <input type="text" id="customer_name" class="form-control" placeholder="e.g. Sarah Jenkins" value="" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mobile_number" class="form-label fw-semibold">Mobile Phone Number <span class="text-danger">*</span></label>
+                                <input type="tel" id="mobile_number" class="form-control" placeholder="e.g. +1 (555) 234-5678" value="" required>
+                            </div>
+                            <div class="col-12">
+                                <label for="address" class="form-label fw-semibold">Full Delivery Address <span class="text-danger">*</span></label>
+                                <textarea id="address" class="form-control" rows="3" placeholder="Enter street name, apartment or building number, area..." required></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Options -->
+                    <div class="card border-0 shadow-sm rounded-4 p-4">
+                        <h5 class="fw-bold mb-3"><i class="bi bi-wallet2 text-danger me-2"></i> Payment Option</h5>
+
+                        <div class="d-flex flex-column gap-2">
+                            <div class="form-check p-3 border rounded-3 bg-light">
+                                <input class="form-check-input" type="radio" name="payment_option" id="pay_cod" value="COD" checked>
+                                <label class="form-check-label fw-semibold" for="pay_cod">
+                                    💵 Cash on Delivery (COD)
+                                    <small class="text-muted d-block font-normal">Pay with cash or card reader upon receiving your scoop package.</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input" type="radio" name="payment_option" id="pay_upi" value="UPI / Online QR">
+                                <label class="form-check-label fw-semibold" for="pay_upi">
+                                    📲 Online Instant UPI / GPay / Apple Pay
+                                    <small class="text-muted d-block font-normal">Quick contactless digital payment.</small>
+                                </label>
+                            </div>
+
+                            <div class="form-check p-3 border rounded-3">
+                                <input class="form-check-input" type="radio" name="payment_option" id="pay_card" value="Credit/Debit Card">
+                                <label class="form-check-label fw-semibold" for="pay_card">
+                                    💳 Credit or Debit Card
+                                    <small class="text-muted d-block font-normal">Visa, Mastercard, American Express.</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Checkout Summary Card -->
+                <div class="col-lg-5">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                        <h5 class="fw-bold mb-3">Order Summary</h5>
+
+                        <div id="checkout-items-list" class="mb-3">
+                            <!-- Populated dynamically by cart.js -->
+                        </div>
+
+                        <!-- Coupon Code Input Box on Checkout -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Promo Coupon Code</label>
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="coupon-input" class="form-control text-uppercase" placeholder="SCOOP10 or FIRST20">
+                                <button type="button" onclick="applyCouponCode(document.getElementById('coupon-input').value)" class="btn btn-dark fw-bold">Apply</button>
+                            </div>
+                            <div id="applied-coupon-row" class="mt-2"></div>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Subtotal:</span>
+                            <span class="fw-bold" id="checkout-subtotal">₹0.00</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Discount Applied:</span>
+                            <span class="fw-bold" id="checkout-discount">-₹0.00</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-muted">
+                            <span>Delivery Fee:</span>
+                            <span class="fw-bold text-success">FREE 🚚</span>
+                        </div>
+
+                        <hr>
+
+                        <div class="d-flex justify-content-between mb-4 fs-5">
+                            <span class="fw-bold">Total Payable:</span>
+                            <span class="fw-bold text-danger fs-4" id="checkout-total">₹0.00</span>
+                        </div>
+
+                        <button type="submit" id="place-order-btn" class="btn btn-primary-custom btn-lg w-100 py-3">
+                            Place Order Now 🍦
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+{% endblock %}
