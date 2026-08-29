@@ -96,12 +96,8 @@ python -m unittest discover -s tests
 
 ## 🚀 GitHub Repository Setup
 
-To push this repository to your GitHub account:
-
-1. **Create a new repository on GitHub** (e.g. named `Sweet-Scoop` or `sweet-scoop`).
-2. **Link the remote and push your code**:
 ```powershell
-git remote add origin https://github.com/YOUR_USERNAME/Sweet-Scoop.git
+git remote add origin https://github.com/himanshudobariya7777/Sweet-Scoop.git
 git branch -M main
 git push -u origin main
 ```
